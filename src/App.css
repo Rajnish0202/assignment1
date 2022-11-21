@@ -1,0 +1,32 @@
+.app {
+  padding: 2rem 4rem;
+  position: relative;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #e3e3e3;
+  z-index: 99;
+}
+
+nav {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logoTitle {
+  font-size: 30px;
+  font-weight: 500;
+  color: #f64c1d;
+}
+
+.logo img {
+  height: 50px;
+  width: 50px;
+  object-fit: cover;
+}

@@ -4,8 +4,8 @@ import './Home.css';
 import useProfiles from './useProfiles';
 
 const Home = () => {
-  const [pageNum, setPageNum] = useState(1);
-  const { isLoading, isError, error, results, hasNextPage } = useProfiles(pageNum);
+  const [limitNum, setLimitNum] = useState(3);
+  const { isLoading, isError, error, results, hasNextProfile } = useProfiles(limitNum);
 
   const intObserver = useRef();
   const lastProfileRef = useCallback(
@@ -15,17 +15,17 @@ const Home = () => {
       if (intObserver.current) intObserver.current.disconnect();
 
       intObserver.current = new IntersectionObserver((profiles) => {
-        if (profiles[0].isIntersecting && hasNextPage) {
+        if (profiles[0].isIntersecting && hasNextProfile) {
           console.log('We are near the last post! ');
-          setPageNum((prev) => prev + 1);
+          setLimitNum((prev) => prev + 3);
         }
       });
       if (profile) intObserver.current.observe(profile);
     },
-    [isLoading, hasNextPage]
+    [isLoading, hasNextProfile]
   );
 
-  if (isError) return <p className='error'>Error:{error.message}</p>;
+  if (isError) return <p className='error'>Error: {error.message}</p>;
 
   return (
     <div className='container'>
@@ -33,8 +33,9 @@ const Home = () => {
         if (results.length === i + 1) {
           console.log('last element');
           return <Card isLoading={isLoading} profile={profile} key={profile.id} ref={lastProfileRef} />;
+        } else {
+          return <Card isLoading={isLoading} profile={profile} key={profile.id} />;
         }
-        return <Card isLoading={isLoading} profile={profile} key={profile.id} />;
       })}
     </div>
   );

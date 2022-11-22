@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { getProfiles } from './axios';
 
-const useProfiles = (pageNum = 1) => {
+const useProfiles = (limitNum = 3) => {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState({});
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasNextProfile, setHasNextProfile] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -16,10 +16,10 @@ const useProfiles = (pageNum = 1) => {
     const controller = new AbortController();
     const { signal } = controller;
 
-    getProfiles(pageNum, { signal })
+    getProfiles(limitNum, { signal })
       .then((data) => {
         setResults((prev) => [...prev, ...data]);
-        setHasNextPage(Boolean(data.length));
+        setHasNextProfile(Boolean(data.length));
         setIsLoading(false);
       })
       .catch((e) => {
@@ -29,9 +29,9 @@ const useProfiles = (pageNum = 1) => {
         setError({ message: e.message });
       });
     return () => controller.abort();
-  }, [pageNum]);
+  }, [limitNum]);
 
-  return { isLoading, isError, error, results, hasNextPage };
+  return { isLoading, isError, error, results, hasNextProfile };
 };
 
 export default useProfiles;

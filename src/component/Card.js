@@ -5,6 +5,7 @@ const Card = React.forwardRef(({ profile, isLoading }, ref) => {
     <>
       {isLoading ? (
         <img
+          className='loadingImage'
           src='https://avatars.dicebear.com/api/micah/:seed.svg?size=150'
           alt='https://avatars.dicebear.com/api/micah/:seed.svg?size=150'
         />

@@ -1,35 +1,41 @@
-import { useEffect, useState, Suspense, lazy } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import Card from './component/Card';
 import './Home.css';
-
-const Card = lazy(() => import('./component/Card'));
+import useProfiles from './useProfiles';
 
 const Home = () => {
-  const [profiles, setProfiles] = useState([]);
+  const [pageNum, setPageNum] = useState(1);
+  const { isLoading, isError, error, results, hasNextPage } = useProfiles(pageNum);
 
-  const fetchProfile = async () => {
-    const response = await fetch('https://jsonplaceholder.typicode.com/users');
-    const data = await response.json();
-    setProfiles(data);
-  };
+  const intObserver = useRef();
+  const lastProfileRef = useCallback(
+    (profile) => {
+      if (isLoading) return;
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+      if (intObserver.current) intObserver.current.disconnect();
+
+      intObserver.current = new IntersectionObserver((profiles) => {
+        if (profiles[0].isIntersecting && hasNextPage) {
+          console.log('We are near the last post! ');
+          setPageNum((prev) => prev + 1);
+        }
+      });
+      if (profile) intObserver.current.observe(profile);
+    },
+    [isLoading, hasNextPage]
+  );
+
+  if (isError) return <p className='error'>Error:{error.message}</p>;
+
   return (
     <div className='container'>
-      {profiles.map((profile) => (
-        <Suspense
-          key={profile.id}
-          fallback={
-            <img
-              src='https://avatars.dicebear.com/api/micah/:seed.svg?size=150'
-              alt='https://avatars.dicebear.com/api/micah/:seed.svg'
-            />
-          }
-        >
-          <Card profile={profile} />
-        </Suspense>
-      ))}
+      {results.map((profile, i) => {
+        if (results.length === i + 1) {
+          console.log('last element');
+          return <Card isLoading={isLoading} profile={profile} key={profile.id} ref={lastProfileRef} />;
+        }
+        return <Card isLoading={isLoading} profile={profile} key={profile.id} />;
+      })}
     </div>
   );
 };

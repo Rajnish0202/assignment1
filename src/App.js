@@ -1,6 +1,5 @@
-import { lazy, Suspense } from 'react';
 import './App.css';
-const Home = lazy(() => import('./Home'));
+import Home from './Home';
 
 function App() {
   return (
@@ -20,9 +19,7 @@ function App() {
           </div>
         </nav>
       </header>
-      <Suspense>
-        <Home />
-      </Suspense>
+      <Home />
     </div>
   );
 }
